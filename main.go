@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	debug = false
+	version = "0.0.5"
+	debug   = false
 
 	userHomePath string // 用户家目录
 	qsgoPath     string
@@ -69,6 +70,8 @@ func help() {
 	(____\/_)\_______)(_______)(_______)
 
 	 这是一个辅助完成Go项目的工具
+
+	 Version: ` + version + `
 
 用法：
   qsgo [参数]
