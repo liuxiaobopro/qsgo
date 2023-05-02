@@ -1,3 +1,3 @@
-module github.com/liuxiaobpro/qsgo
+module github.com/liuxiaobopro/qsgo
 
 go 1.18
