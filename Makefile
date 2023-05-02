@@ -1,14 +1,11 @@
 BIN_FILE=qsgo
-BIN_DIR=bin
+BIN_DIR=.
 BIN_PATH=$(BIN_DIR)/$(BIN_FILE)
 
 tidy:
 	go mod tidy
 
-run:
-	go build -o $(BIN_PATH).exe && $(BIN_PATH).exe
-
-default: windows
+build: windows
 
 windows:
 	@echo "Building for Windows..."
@@ -16,3 +13,10 @@ windows:
 	go build -o $(BIN_PATH).exe
 	@echo "Done! $(shell date "+%Y-%m-%d %H:%M:%S")"
 
+clean:
+	@echo "Cleaning..."
+	rm -rf $(BIN_PATH).exe
+
+run: tidy clean windows
+	@echo "Running..."
+	$(BIN_PATH).exe $(ARGS)
