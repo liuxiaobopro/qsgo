@@ -1,47 +1,108 @@
 package web
 
 import (
+	"bytes"
 	"fmt"
 	"os"
-	"text/template"
+	"os/exec"
+	"sync"
+	"syscall"
+
+	filex "github.com/liuxiaobopro/gobox/file"
 )
 
 var (
-	tplPath string
+	createProName string
 )
 
-func init() {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-	tplPath = fmt.Sprintf("%s/.qsgo/web/", home)
-}
-
 func Start(arg string) {
-	// 定义要传递给模板的数据
-	data := struct {
-		AuthImport string
-	}{
-		AuthImport: "myauth",
+	gitProName := "qsgo-web-templete"
+	createProName = arg
+	fmt.Println("开始创建项目: ", createProName)
+
+	// 检查文件夹是否存在
+	if _, err := os.Stat(gitProName); err == nil {
+		// 存在,删除
+		fmt.Println("删除文件夹: ", gitProName)
+		os.RemoveAll(gitProName)
+	}
+	if _, err := os.Stat(createProName); err == nil {
+		// 存在,删除
+		fmt.Println("删除文件夹: ", createProName)
+		os.RemoveAll(createProName)
 	}
 
-	// 解析模板文件
-	tpl, err := template.ParseFiles(tplPath + "demo.tpl")
-	if err != nil {
-		panic(err)
+	// gitPath := fmt.Sprintf("http://github.com/liuxiaobopro/%s.git", gitProName)
+	gitPath := fmt.Sprintf("http://gitee.com/liuxiaobopro/%s.git", gitProName)
+	cmd := exec.Command("git", "clone", gitPath)
+
+	fmt.Println("执行命令：", cmd.Args)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		fmt.Println("执行命令时出错：", err)
+		fmt.Println("标准错误信息：", stderr.String())
+		return
 	}
 
-	// 创建新文件
-	file, err := os.Create(fmt.Sprintf("temp/%s.go", arg))
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
+	// 修改clone下来的项目名
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		fmt.Println("修改项目名: ", createProName)
+		if err := syscall.Rename(gitProName, createProName); err != nil {
+			fmt.Println("修改文件夹名时出错：", err)
+			return
+		}
 
-	// 应用模板，将结果写入新文件
-	err = tpl.Execute(file, data)
-	if err != nil {
-		panic(err)
+		// 删除.git
+		fmt.Println("删除.git文件夹")
+		if err := os.RemoveAll(fmt.Sprintf("%s/.git", createProName)); err != nil {
+			fmt.Println("删除.git文件夹时出错：", err)
+			return
+		}
+
+		// 修改项目下所有文件内容包含gitProName改成arg
+		fmt.Printf("修改项目下所有文件内容包含%s改成%s\n", gitProName, createProName)
+		if err := filex.ReplaceInDir(createProName, gitProName, createProName); err != nil {
+			fmt.Printf("修改项目下所有文件内容包含%s改成%s时出错：%s\n", gitProName, createProName, err)
+			return
+		}
+
+		// git init && git add . && git commit -m "init"
+		fmt.Println("git init && git add . && git commit -m \"init\"")
+		cmd := exec.Command("git", "init")
+		cmd.Dir = createProName
+		if err := cmd.Run(); err != nil {
+			fmt.Println("git init时出错：", err)
+			return
+		}
+
+		cmd = exec.Command("git", "add", ".")
+		cmd.Dir = createProName
+		if err := cmd.Run(); err != nil {
+			fmt.Println("git add .时出错：", err)
+			return
+		}
+
+		cmd = exec.Command("git", "commit", "-m", "init")
+		cmd.Dir = createProName
+		if err := cmd.Run(); err != nil {
+			fmt.Println("git commit -m \"init\"时出错：", err)
+			return
+		}
+
+		fmt.Printf("项目%s创建成功\n", createProName)
+	}()
+	wg.Wait()
+	// go mod tidy
+	fmt.Println("go mod tidy")
+	cmd = exec.Command("go", "mod", "tidy")
+	cmd.Dir = createProName
+	if err := cmd.Run(); err != nil {
+		fmt.Println("go mod tidy时出错：", err)
+		return
 	}
+	fmt.Println("Done!")
 }
