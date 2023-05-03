@@ -2,23 +2,24 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 
-	"github.com/liuxiaobopro/qsgo/web"
+	"github.com/liuxiaobopro/qsgo/service/web"
 
 	stringx "github.com/liuxiaobopro/gobox/string"
 )
 
 var (
-	version = "0.0.7"
+	version string
 	debug   = false
 
 	userHomePath string // 用户家目录
 	qsgoPath     string
 	webTplPath   string
 
-	projectWebTplPath = "web/tpl"
+	projectWebTplPath = "tpl"
 )
 
 func init() {
@@ -32,7 +33,22 @@ func init() {
 	userHomePath = u
 	qsgoPath = userHomePath + "/.qsgo"
 	webTplPath = qsgoPath + "/tpl"
-	initWebTpl()
+
+	//#region 获取当前目录下version文件的内容
+	versionFile, err := os.Open("VERSION")
+	if err != nil {
+		panic(err)
+	}
+	defer versionFile.Close()
+
+	versionBytes, err := ioutil.ReadAll(versionFile)
+	if err != nil {
+		panic(err)
+	}
+	version = string(versionBytes)
+	//#endregion
+
+	initTpl()
 }
 
 func main() {
@@ -44,8 +60,8 @@ func main() {
 	}
 
 	for _, v := range args {
-		if stringx.Has(v, byte('=')) {
-			s := strings.Split(v, "=")
+		if stringx.Has(v, byte(':')) {
+			s := strings.Split(v, ":")
 			switch s[0] {
 			case "web":
 				web.Start(s[1])
@@ -53,6 +69,8 @@ func main() {
 		} else {
 			if v == "h" || v == "help" {
 				help()
+			} else {
+				fmt.Println("参数错误")
 			}
 		}
 	}
@@ -74,10 +92,17 @@ func help() {
 	 Version: ` + version + `
 
 用法：
-  qsgo [参数]
+  qsgo [参数:功能=参数值]
 
 参数：
-  h, help  显示帮助信息[qsgo OR qsgo h OR qsgo help]
-  web      生成web项目[qsgo web=项目名]
+---------------------------------------------------
+  h, help  显示帮助信息
+	qsgo
+	qsgo h
+	qsgo help
+---------------------------------------------------
+  web      生成web项目
+  	生成项目  qsgo web:name=项目名
+  	生成接口  qsgo web:api=接口名
 	`)
 }

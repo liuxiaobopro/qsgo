@@ -5,20 +5,39 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 	"syscall"
 
 	filex "github.com/liuxiaobopro/gobox/file"
+	stringx "github.com/liuxiaobopro/gobox/string"
 )
 
-var (
-	createProName string
-)
+var ()
 
 func Start(arg string) {
+	if stringx.Count(arg, byte('=')) != 1 {
+		fmt.Println("参数格式错误")
+		return
+	}
+	argArr := strings.Split(arg, "=")
+	switch argArr[0] {
+	case "name":
+		name(argArr[1])
+	default:
+		fmt.Println("参数未找到")
+	}
+}
+
+func name(createProName string) {
+	// 检查git是否安装
+	if _, err := exec.LookPath("git"); err != nil {
+		fmt.Println("未安装git")
+		return
+	}
+
 	gitProName := "qsgo-web-templete"
-	createProName = arg
-	fmt.Println("开始创建项目: ", createProName)
+	fmt.Printf("开始创建项目: %s (如果失败,请多次尝试)\n", createProName)
 
 	// 检查文件夹是否存在
 	if _, err := os.Stat(gitProName); err == nil {
@@ -94,15 +113,16 @@ func Start(arg string) {
 		}
 
 		fmt.Printf("项目%s创建成功\n", createProName)
+
+		// go mod tidy
+		fmt.Println("go mod tidy")
+		cmd = exec.Command("go", "mod", "tidy")
+		cmd.Dir = createProName
+		if err := cmd.Run(); err != nil {
+			fmt.Println("go mod tidy时出错：", err)
+			return
+		}
+		fmt.Println("Done!")
 	}()
 	wg.Wait()
-	// go mod tidy
-	fmt.Println("go mod tidy")
-	cmd = exec.Command("go", "mod", "tidy")
-	cmd.Dir = createProName
-	if err := cmd.Run(); err != nil {
-		fmt.Println("go mod tidy时出错：", err)
-		return
-	}
-	fmt.Println("Done!")
 }

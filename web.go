@@ -6,10 +6,10 @@ import (
 	"os"
 )
 
-//go:embed web/tpl/*
+//go:embed tpl/*
 var webTpls embed.FS
 
-func initWebTpl() {
+func initTpl() {
 	// 创建.qsgo目录
 	if _, err := os.Stat(qsgoPath); os.IsNotExist(err) {
 		err = os.Mkdir(qsgoPath, os.ModePerm)
