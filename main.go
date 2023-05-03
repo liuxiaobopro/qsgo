@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	version = "0.0.5"
+	version = "0.0.7"
 	debug   = false
 
 	userHomePath string // 用户家目录
