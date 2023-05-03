@@ -1,8 +1,8 @@
 package main
 
 import (
+	"embed"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -20,6 +20,9 @@ var (
 	webTplPath   string
 
 	projectWebTplPath = "tpl"
+
+	//go:embed VERSION
+	versionFile embed.FS
 )
 
 func init() {
@@ -35,17 +38,11 @@ func init() {
 	webTplPath = qsgoPath + "/tpl"
 
 	//#region 获取当前目录下version文件的内容
-	versionFile, err := os.Open("VERSION")
+	versionByte, err := versionFile.ReadFile("VERSION")
 	if err != nil {
 		panic(err)
 	}
-	defer versionFile.Close()
-
-	versionBytes, err := ioutil.ReadAll(versionFile)
-	if err != nil {
-		panic(err)
-	}
-	version = string(versionBytes)
+	version = string(versionByte)
 	//#endregion
 
 	initTpl()
