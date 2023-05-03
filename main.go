@@ -13,7 +13,7 @@ import (
 
 var (
 	version string
-	debug   = false
+	debug   = true
 
 	userHomePath string // 用户家目录
 	qsgoPath     string
