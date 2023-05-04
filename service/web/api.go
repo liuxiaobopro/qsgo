@@ -5,6 +5,11 @@ import (
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/liuxiaobopro/qsgo/global"
+
+	otherx "github.com/liuxiaobopro/gobox/other"
+	stringx "github.com/liuxiaobopro/gobox/string"
 )
 
 var (
@@ -16,27 +21,40 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-
 	webTplPath = u + "/.qsgo/tpl"
+
+	// 获取当前目录
+	pwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	var err1 error
+	global.ProjectName, err1 = otherx.GetProjectName(pwd)
+	if err1 != nil {
+		fmt.Println("获取项目名时出错：", err)
+		return
+	}
 }
 
 func api(name string) {
 	fmt.Printf("开始创建api: %s\n", name)
 	// 目标目录
-	targetPath := "./greet/"
+	targetPath := "./"
 
 	controllerPath := targetPath + "controller/" + name
-	controllerPath = truncateString(controllerPath, '/')
+	controllerPath = stringx.CutStartString(controllerPath, '/')
 	controllerFilePath := targetPath + "controller/" + name + ".go"
 	logicPath := targetPath + "logic/" + name
-	logicPath = truncateString(logicPath, '/')
+	logicPath = stringx.CutStartString(logicPath, '/')
 	logicFilePath := targetPath + "logic/" + name + ".go"
 
-	fmt.Println("controller目录路径:", controllerPath)
-	fmt.Println("logic目录路径:", logicPath)
-	fmt.Println("controller文件路径:", controllerFilePath)
-	fmt.Println("logic文件路径:", logicFilePath)
-	fmt.Printf("webTplPath: %s\n", webTplPath)
+	if global.Debug {
+		fmt.Println("controller目录路径:", controllerPath)
+		fmt.Println("logic目录路径:", logicPath)
+		fmt.Println("controller文件路径:", controllerFilePath)
+		fmt.Println("logic文件路径:", logicFilePath)
+		fmt.Printf("webTplPath: %s\n", webTplPath)
+	}
 
 	// 判断controllerPath是否存在
 	if _, err := os.Stat(controllerFilePath); err == nil {
@@ -61,10 +79,10 @@ func api(name string) {
 				Handle     string
 				Controller string
 			}{
-				Package:    "controller",
-				Project:    "greet",
-				Handle:     strings.ToLower(name),
-				Controller: name,
+				Package:    getPackage(name),
+				Project:    global.ProjectName,
+				Handle:     getHandle(name),
+				Controller: getControllerName(name),
 			}
 			tpl, err := template.ParseFiles(webTplPath + "/web_controller.tpl")
 			if err != nil {
@@ -104,10 +122,19 @@ func api(name string) {
 	}
 }
 
-func truncateString(s string, c rune) string {
-	i := strings.LastIndex(s, string(c))
-	if i == -1 {
-		return s
+func getPackage(name string) string {
+	if !stringx.Has(name, byte('/')) {
+		return "controller"
+	} else {
+		return stringx.CutEndString(name, '/')
 	}
-	return s[0 : i+1]
+}
+
+func getHandle(name string) string {
+	return stringx.CutEndString(name, '/')
+}
+
+func getControllerName(name string) string {
+	s := stringx.CutEndString(name, '/')
+	return strings.ToTitle(s)
 }

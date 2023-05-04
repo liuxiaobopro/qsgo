@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	stringx "github.com/liuxiaobopro/gobox/string"
+	"github.com/liuxiaobopro/qsgo/global"
 )
 
 var ()
@@ -15,6 +16,9 @@ func Start(arg string) {
 		return
 	}
 	argArr := strings.Split(arg, "=")
+	if global.Debug {
+		fmt.Printf("argArr: %v\n", argArr)
+	}
 	switch argArr[0] {
 	case "name":
 		name(argArr[1])

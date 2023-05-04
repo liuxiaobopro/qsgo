@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/liuxiaobopro/qsgo/global"
 	"github.com/liuxiaobopro/qsgo/service/web"
 
 	stringx "github.com/liuxiaobopro/gobox/string"
@@ -26,6 +27,12 @@ var (
 )
 
 func init() {
+	//#region 初始化
+	//#region 通用
+	global.Debug = debug
+	global.Version = version
+	//#endregion
+	//#region 用户相关
 	u, err := os.UserHomeDir()
 	if err != nil {
 		panic(err)
@@ -33,9 +40,23 @@ func init() {
 	if debug {
 		fmt.Println("home:", u)
 	}
-	userHomePath = u
-	qsgoPath = userHomePath + "/.qsgo"
-	webTplPath = qsgoPath + "/tpl"
+	global.UserHomePath, userHomePath = u, u
+	global.QsgoPath, qsgoPath = userHomePath+"/.qsgo", userHomePath+"/.qsgo"
+	global.WebTplPath, webTplPath = qsgoPath+"/tpl", qsgoPath+"/tpl"
+	//#endregion
+
+	//#region 项目相关
+	// 获取当前目录
+	pwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	if debug {
+		fmt.Println("pwd:", pwd)
+	}
+	global.ProjectPath = pwd
+	//#endregion
+	//#endregion
 
 	//#region 获取当前目录下version文件的内容
 	versionByte, err := versionFile.ReadFile("VERSION")
@@ -100,6 +121,8 @@ func help() {
 ---------------------------------------------------
   web      生成web项目
   	生成项目  qsgo web:name=项目名
-  	生成接口  qsgo web:api=接口名
+	  *最好找个空目录执行
+  	生成接口  qsgo web:api=接口名(待开发)
+	  *必须在项目目录下执行
 	`)
 }
