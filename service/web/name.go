@@ -19,7 +19,7 @@ func name(createProName string) {
 	}
 
 	gitProName := "qsgo-web-templete"
-	fmt.Printf("开始创建项目: %s (如果失败,请多次尝试)\n", createProName)
+	fmt.Printf("开始创建项目: %s (第一次执行可能会失败, 请再次执行)\n", createProName)
 
 	// 检查文件夹是否存在
 	if _, err := os.Stat(gitProName); err == nil {

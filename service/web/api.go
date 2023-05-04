@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"text/template"
 
@@ -232,7 +233,8 @@ func getPackage(name, d string) string {
 	if !stringx.Has(name, byte('/')) {
 		return d
 	} else {
-		return stringx.CutEndString(name, '/')
+		arr := strings.Split(name, "/")
+		return arr[len(arr)-2]
 	}
 }
 
