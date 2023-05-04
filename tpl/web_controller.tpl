@@ -1,7 +1,7 @@
 package {{.Package}}
 
 import (
-	"{{.Project}}/logic"
+	{{.Logic}}"{{.Project}}/logic{{.LogicPath}}"
 	"{{.Project}}/types/req"
 
 	"github.com/gin-gonic/gin"
@@ -15,29 +15,14 @@ type {{.Handle}}Handle struct {
 
 var {{.CL}}Controller = &{{.Handle}}Handle{}
 
-// IndexGet get请求
-func (th *{{.Handle}}Handle) IndexGet(c *gin.Context) {
-	var r req.{{.CL}}GetReq
-	if err := th.ShouldBind(c, &r); err != nil {
+// Index Index
+func (th *{{.Handle}}Handle) Index(c *gin.Context) {
+	var r req.{{.CL}}IndexReq
+	if err := th.ShouldBind(c, &r); err != nil { // get=>ShouldBind post=>ShouldBindJSON
 		th.ReturnErr(c, respx.ParamErrT.ToPt())
 		return
 	}
-	data, err := logic.{{.CL}}logic.IndexGet(&r)
-	if err != nil {
-		th.ReturnErr(c, err)
-		return
-	}
-	th.RetuenOk(c, data)
-}
-
-// IndexPost post请求
-func (th *{{.Handle}}Handle) IndexPost(c *gin.Context) {
-	var r req.{{.CL}}PostReq
-	if err := th.ShouldBindJSON(c, &r); err != nil {
-		th.ReturnErr(c, respx.ParamErrT.ToPt())
-		return
-	}
-	data, err := logic.{{.CL}}logic.IndexPost(&r)
+	data, err := {{.Logic}}.{{.CL}}logic.Index(&r)
 	if err != nil {
 		th.ReturnErr(c, err)
 		return

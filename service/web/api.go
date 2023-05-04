@@ -8,6 +8,7 @@ import (
 
 	"github.com/liuxiaobopro/qsgo/global"
 
+	filex "github.com/liuxiaobopro/gobox/file"
 	otherx "github.com/liuxiaobopro/gobox/other"
 	stringx "github.com/liuxiaobopro/gobox/string"
 )
@@ -17,10 +18,12 @@ var (
 )
 
 type ControllerLogic struct {
-	Package string
-	Project string
-	Handle  string
-	CL      string
+	Package   string
+	Project   string
+	Handle    string
+	CL        string
+	LogicPath string
+	Logic     string
 }
 
 func init() {
@@ -64,11 +67,10 @@ func api(name string) {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(3)
 
 	// 判断controllerPath是否存在
-	go func(wg *sync.WaitGroup) {
-		defer wg.Done()
+	{
 		if _, err := os.Stat(controllerFilePath); err == nil {
 			fmt.Printf("controller文件已存在: %s\n", controllerPath)
 			return
@@ -86,10 +88,12 @@ func api(name string) {
 
 				// 解析模板文件
 				data := ControllerLogic{
-					Package: getPackage(name, "controller"),
-					Project: global.ProjectName,
-					Handle:  getHandle(name),
-					CL:      getCL(name),
+					Package:   getPackage(name, "controller"),
+					Project:   global.ProjectName,
+					Handle:    getHandle(name),
+					CL:        getCL(name),
+					Logic:     getLogic(name),
+					LogicPath: getLogicPath(name),
 				}
 				tpl, err := template.ParseFiles(webTplPath + "/web_controller.tpl")
 				if err != nil {
@@ -107,11 +111,10 @@ func api(name string) {
 				return
 			}
 		}
-	}(&wg)
+	}
 
 	// 判断logicPath是否存在
-	go func(wg *sync.WaitGroup) {
-		defer wg.Done()
+	{
 		if _, err := os.Stat(logicFilePath); err == nil {
 			fmt.Printf("logic文件已存在: %s\n", logicPath)
 			return
@@ -150,9 +153,79 @@ func api(name string) {
 				return
 			}
 		}
-	}(&wg)
+	}
 
-	wg.Wait()
+	// 判断reply和req字符串是否存在
+	{
+		var (
+			reqStruct                  string
+			replyStruct                string
+			reqFilePath, replyFilePath = targetPath + "types/req/", targetPath + "types/reply/"
+		)
+		if stringx.Has(name, byte('/')) {
+			reqStruct = stringx.ReplaceCharAfterSpecifiedCharUp(name, "/") + "IndexReq"
+			replyStruct = stringx.ReplaceCharAfterSpecifiedCharUp(name, "/") + "IndexReply"
+		} else {
+			n := stringx.FirstUp(name)
+			reqStruct = n + "IndexReq"
+			replyStruct = n + "IndexReply"
+		}
+		isHasStr1 := fmt.Sprintf("type %s struct", reqStruct)
+		isHasStr2 := fmt.Sprintf("type %s struct", replyStruct)
+
+		reqStruct = fmt.Sprintf("\n\ntype %s struct {}", reqStruct)
+		replyStruct = fmt.Sprintf("\n\ntype %s struct {}", replyStruct)
+
+		// 判断struct是否存在
+		if has, err := filex.Has(reqFilePath+"req.go", isHasStr1); err != nil {
+			fmt.Printf("判断req.go文件是否存在失败: %s\n", err.Error())
+			return
+		} else {
+			if !has {
+				fmt.Printf("req struct 不存在: %s\n", isHasStr1)
+				// 追加内容
+				if err := filex.Append(reqFilePath+"req.go", reqStruct); err != nil {
+					fmt.Printf("追加内容失败: %s\n", err.Error())
+					return
+				}
+			} else {
+				fmt.Println("req struct 存在")
+			}
+		}
+
+		// 判断struct是否存在
+		if has, err := filex.Has(replyFilePath+"reply.go", isHasStr2); err != nil {
+			fmt.Printf("判断reply.go文件是否存在失败: %s\n", err.Error())
+			return
+		} else {
+			if !has {
+				fmt.Printf("reply struct 不存在: %s\n", isHasStr2)
+				// 追加内容
+				if err := filex.Append(replyFilePath+"reply.go", replyStruct); err != nil {
+					fmt.Printf("追加内容失败: %s\n", err.Error())
+					return
+				}
+			} else {
+				fmt.Println("reply struct 存在")
+			}
+		}
+	}
+}
+
+func getLogicPath(name string) string {
+	s := stringx.CutStartString(name, '/')
+	s = s[:len(s)-1]
+	return "/" + s
+}
+
+func getLogic(name string) string {
+	if stringx.Has(name, byte('/')) {
+		s := stringx.CutStartString(name, '/')
+		s = stringx.ReplaceCharAfterSpecifiedCharLow(s, "/")
+		return s + "Logic"
+	} else {
+		return "logic"
+	}
 }
 
 func getPackage(name, d string) string {
