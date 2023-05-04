@@ -214,9 +214,13 @@ func api(name string) {
 }
 
 func getLogicPath(name string) string {
-	s := stringx.CutStartString(name, '/')
-	s = s[:len(s)-1]
-	return "/" + s
+	if stringx.Has(name, byte('/')) {
+		s := stringx.CutStartString(name, '/')
+		s = s[:len(s)-1]
+		return "/" + s
+	} else {
+		return ""
+	}
 }
 
 func getLogic(name string) string {
