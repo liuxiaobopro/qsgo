@@ -13,16 +13,16 @@ type {{.Handle}}Handle struct {
 	httpx.GinHandle
 }
 
-var {{.Controller}}Controller = &{{.Handle}}Handle{}
+var {{.CL}}Controller = &{{.Handle}}Handle{}
 
 // IndexGet get请求
 func (th *{{.Handle}}Handle) IndexGet(c *gin.Context) {
-	var r req.{{.Controller}}GetReq
+	var r req.{{.CL}}GetReq
 	if err := th.ShouldBind(c, &r); err != nil {
 		th.ReturnErr(c, respx.ParamErrT.ToPt())
 		return
 	}
-	data, err := logic.{{.Controller}}logic.IndexGet(&r)
+	data, err := logic.{{.CL}}logic.IndexGet(&r)
 	if err != nil {
 		th.ReturnErr(c, err)
 		return
@@ -32,12 +32,12 @@ func (th *{{.Handle}}Handle) IndexGet(c *gin.Context) {
 
 // IndexPost post请求
 func (th *{{.Handle}}Handle) IndexPost(c *gin.Context) {
-	var r req.{{.Controller}}PostReq
+	var r req.{{.CL}}PostReq
 	if err := th.ShouldBindJSON(c, &r); err != nil {
 		th.ReturnErr(c, respx.ParamErrT.ToPt())
 		return
 	}
-	data, err := logic.{{.Controller}}logic.IndexPost(&r)
+	data, err := logic.{{.CL}}logic.IndexPost(&r)
 	if err != nil {
 		th.ReturnErr(c, err)
 		return

@@ -3,7 +3,7 @@ package web
 import (
 	"fmt"
 	"os"
-	"strings"
+	"sync"
 	"text/template"
 
 	"github.com/liuxiaobopro/qsgo/global"
@@ -15,6 +15,13 @@ import (
 var (
 	webTplPath string
 )
+
+type ControllerLogic struct {
+	Package string
+	Project string
+	Handle  string
+	CL      string
+}
 
 func init() {
 	u, err := os.UserHomeDir()
@@ -56,85 +63,110 @@ func api(name string) {
 		fmt.Printf("webTplPath: %s\n", webTplPath)
 	}
 
-	// 判断controllerPath是否存在
-	if _, err := os.Stat(controllerFilePath); err == nil {
-		fmt.Printf("controller文件已存在: %s\n", controllerPath)
-		return
-	} else {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(controllerPath, os.ModePerm); err != nil {
-				fmt.Printf("创建controller目录失败: %s\n", err.Error())
-				return
-			}
-			var file *os.File
-			if file, err = os.Create(controllerFilePath); err != nil {
-				fmt.Printf("创建controller文件失败: %s\n", err.Error())
-				return
-			}
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-			// 解析模板文件
-			data := struct {
-				Package    string
-				Project    string
-				Handle     string
-				Controller string
-			}{
-				Package:    getPackage(name),
-				Project:    global.ProjectName,
-				Handle:     getHandle(name),
-				Controller: getControllerName(name),
-			}
-			tpl, err := template.ParseFiles(webTplPath + "/web_controller.tpl")
-			if err != nil {
-				fmt.Printf("解析模板文件失败: %s\n", err.Error())
-				return
-			}
-			// 应用模板，将结果写入新文件
-			err = tpl.Execute(file, data)
-			if err != nil {
-				fmt.Printf("应用模板失败: %s\n", err.Error())
-				return
-			}
-		} else {
-			fmt.Printf("controller文件打开失败: %s\n", err.Error())
+	// 判断controllerPath是否存在
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		if _, err := os.Stat(controllerFilePath); err == nil {
+			fmt.Printf("controller文件已存在: %s\n", controllerPath)
 			return
+		} else {
+			if os.IsNotExist(err) {
+				if err := os.MkdirAll(controllerPath, os.ModePerm); err != nil {
+					fmt.Printf("创建controller目录失败: %s\n", err.Error())
+					return
+				}
+				var file *os.File
+				if file, err = os.Create(controllerFilePath); err != nil {
+					fmt.Printf("创建controller文件失败: %s\n", err.Error())
+					return
+				}
+
+				// 解析模板文件
+				data := ControllerLogic{
+					Package: getPackage(name, "controller"),
+					Project: global.ProjectName,
+					Handle:  getHandle(name),
+					CL:      getCL(name),
+				}
+				tpl, err := template.ParseFiles(webTplPath + "/web_controller.tpl")
+				if err != nil {
+					fmt.Printf("解析模板文件失败: %s\n", err.Error())
+					return
+				}
+				// 应用模板，将结果写入新文件
+				err = tpl.Execute(file, data)
+				if err != nil {
+					fmt.Printf("应用模板失败: %s\n", err.Error())
+					return
+				}
+			} else {
+				fmt.Printf("controller文件打开失败: %s\n", err.Error())
+				return
+			}
 		}
-	}
+	}(&wg)
 
 	// 判断logicPath是否存在
-	if _, err := os.Stat(logicFilePath); err == nil {
-		fmt.Printf("logic文件已存在: %s\n", logicPath)
-		return
-	} else {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(logicPath, os.ModePerm); err != nil {
-				fmt.Printf("创建logic目录失败: %s\n", err.Error())
-				return
-			}
-			if _, err := os.Create(logicFilePath); err != nil {
-				fmt.Printf("创建logic文件失败: %s\n", err.Error())
-				return
-			}
-		} else {
-			fmt.Printf("logic文件打开失败: %s\n", err.Error())
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		if _, err := os.Stat(logicFilePath); err == nil {
+			fmt.Printf("logic文件已存在: %s\n", logicPath)
 			return
+		} else {
+			if os.IsNotExist(err) {
+				if err := os.MkdirAll(logicPath, os.ModePerm); err != nil {
+					fmt.Printf("创建logic目录失败: %s\n", err.Error())
+					return
+				}
+				var file *os.File
+				if file, err = os.Create(logicFilePath); err != nil {
+					fmt.Printf("创建logic文件失败: %s\n", err.Error())
+					return
+				}
+
+				// 解析模板文件
+				data := ControllerLogic{
+					Package: getPackage(name, "logic"),
+					Project: global.ProjectName,
+					Handle:  getHandle(name),
+					CL:      getCL(name),
+				}
+				tpl, err := template.ParseFiles(webTplPath + "/web_logic.tpl")
+				if err != nil {
+					fmt.Printf("解析模板文件失败: %s\n", err.Error())
+					return
+				}
+				// 应用模板，将结果写入新文件
+				err = tpl.Execute(file, data)
+				if err != nil {
+					fmt.Printf("应用模板失败: %s\n", err.Error())
+					return
+				}
+			} else {
+				fmt.Printf("logic文件打开失败: %s\n", err.Error())
+				return
+			}
 		}
-	}
+	}(&wg)
+
+	wg.Wait()
 }
 
-func getPackage(name string) string {
+func getPackage(name, d string) string {
 	if !stringx.Has(name, byte('/')) {
-		return "controller"
+		return d
 	} else {
 		return stringx.CutEndString(name, '/')
 	}
 }
 
 func getHandle(name string) string {
-	return stringx.CutEndString(name, '/')
+	return stringx.ReplaceCharAfterSpecifiedCharLow(name, "/")
 }
 
-func getControllerName(name string) string {
-	s := stringx.CutEndString(name, '/')
-	return strings.ToTitle(s)
+func getCL(name string) string {
+	return stringx.ReplaceCharAfterSpecifiedCharUp(name, "/")
 }
