@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"sync"
 	"text/template"
 
 	"github.com/liuxiaobopro/qsgo/global"
+	fmtp "github.com/liuxiaobopro/qsgo/log/fmt"
 
 	filex "github.com/liuxiaobopro/gobox/file"
 	otherx "github.com/liuxiaobopro/gobox/other"
@@ -42,7 +42,7 @@ func init() {
 	var err1 error
 	global.ProjectName, err1 = otherx.GetProjectName(pwd)
 	if err1 != nil {
-		fmt.Println("获取项目名时出错：", err)
+		fmtp.Println("获取项目名时出错：", err)
 		return
 	}
 }
@@ -59,31 +59,26 @@ func api(name string) {
 	logicPath = stringx.CutStartString(logicPath, '/')
 	logicFilePath := targetPath + "logic/" + name + ".go"
 
-	if global.Debug {
-		fmt.Println("controller目录路径:", controllerPath)
-		fmt.Println("logic目录路径:", logicPath)
-		fmt.Println("controller文件路径:", controllerFilePath)
-		fmt.Println("logic文件路径:", logicFilePath)
-		fmt.Printf("webTplPath: %s\n", webTplPath)
-	}
-
-	var wg sync.WaitGroup
-	wg.Add(3)
+	fmtp.Println("controller目录路径:", controllerPath)
+	fmtp.Println("logic目录路径:", logicPath)
+	fmtp.Println("controller文件路径:", controllerFilePath)
+	fmtp.Println("logic文件路径:", logicFilePath)
+	fmtp.Printf("webTplPath: %s\n", webTplPath)
 
 	// 判断controllerPath是否存在
 	{
 		if _, err := os.Stat(controllerFilePath); err == nil {
-			fmt.Printf("controller文件已存在: %s\n", controllerPath)
+			fmtp.Printf("controller文件已存在: %s\n", controllerPath)
 			return
 		} else {
 			if os.IsNotExist(err) {
 				if err := os.MkdirAll(controllerPath, os.ModePerm); err != nil {
-					fmt.Printf("创建controller目录失败: %s\n", err.Error())
+					fmtp.Printf("创建controller目录失败: %s\n", err.Error())
 					return
 				}
 				var file *os.File
 				if file, err = os.Create(controllerFilePath); err != nil {
-					fmt.Printf("创建controller文件失败: %s\n", err.Error())
+					fmtp.Printf("创建controller文件失败: %s\n", err.Error())
 					return
 				}
 
@@ -98,17 +93,17 @@ func api(name string) {
 				}
 				tpl, err := template.ParseFiles(webTplPath + "/web_controller.tpl")
 				if err != nil {
-					fmt.Printf("解析模板文件失败: %s\n", err.Error())
+					fmtp.Printf("解析模板文件失败: %s\n", err.Error())
 					return
 				}
 				// 应用模板，将结果写入新文件
 				err = tpl.Execute(file, data)
 				if err != nil {
-					fmt.Printf("应用模板失败: %s\n", err.Error())
+					fmtp.Printf("应用模板失败: %s\n", err.Error())
 					return
 				}
 			} else {
-				fmt.Printf("controller文件打开失败: %s\n", err.Error())
+				fmtp.Printf("controller文件打开失败: %s\n", err.Error())
 				return
 			}
 		}
@@ -117,17 +112,17 @@ func api(name string) {
 	// 判断logicPath是否存在
 	{
 		if _, err := os.Stat(logicFilePath); err == nil {
-			fmt.Printf("logic文件已存在: %s\n", logicPath)
+			fmtp.Printf("logic文件已存在: %s\n", logicPath)
 			return
 		} else {
 			if os.IsNotExist(err) {
 				if err := os.MkdirAll(logicPath, os.ModePerm); err != nil {
-					fmt.Printf("创建logic目录失败: %s\n", err.Error())
+					fmtp.Printf("创建logic目录失败: %s\n", err.Error())
 					return
 				}
 				var file *os.File
 				if file, err = os.Create(logicFilePath); err != nil {
-					fmt.Printf("创建logic文件失败: %s\n", err.Error())
+					fmtp.Printf("创建logic文件失败: %s\n", err.Error())
 					return
 				}
 
@@ -140,17 +135,17 @@ func api(name string) {
 				}
 				tpl, err := template.ParseFiles(webTplPath + "/web_logic.tpl")
 				if err != nil {
-					fmt.Printf("解析模板文件失败: %s\n", err.Error())
+					fmtp.Printf("解析模板文件失败: %s\n", err.Error())
 					return
 				}
 				// 应用模板，将结果写入新文件
 				err = tpl.Execute(file, data)
 				if err != nil {
-					fmt.Printf("应用模板失败: %s\n", err.Error())
+					fmtp.Printf("应用模板失败: %s\n", err.Error())
 					return
 				}
 			} else {
-				fmt.Printf("logic文件打开失败: %s\n", err.Error())
+				fmtp.Printf("logic文件打开失败: %s\n", err.Error())
 				return
 			}
 		}
@@ -179,38 +174,40 @@ func api(name string) {
 
 		// 判断struct是否存在
 		if has, err := filex.Has(reqFilePath+"req.go", isHasStr1); err != nil {
-			fmt.Printf("判断req.go文件是否存在失败: %s\n", err.Error())
+			fmtp.Printf("判断req.go文件是否存在失败: %s\n", err.Error())
 			return
 		} else {
 			if !has {
-				fmt.Printf("req struct 不存在: %s\n", isHasStr1)
+				fmtp.Printf("req struct 不存在: %s\n", isHasStr1)
 				// 追加内容
 				if err := filex.Append(reqFilePath+"req.go", reqStruct); err != nil {
-					fmt.Printf("追加内容失败: %s\n", err.Error())
+					fmtp.Printf("追加内容失败: %s\n", err.Error())
 					return
 				}
 			} else {
-				fmt.Println("req struct 存在")
+				fmtp.Println("req struct 存在")
 			}
 		}
 
 		// 判断struct是否存在
 		if has, err := filex.Has(replyFilePath+"reply.go", isHasStr2); err != nil {
-			fmt.Printf("判断reply.go文件是否存在失败: %s\n", err.Error())
+			fmtp.Printf("判断reply.go文件是否存在失败: %s\n", err.Error())
 			return
 		} else {
 			if !has {
-				fmt.Printf("reply struct 不存在: %s\n", isHasStr2)
+				fmtp.Printf("reply struct 不存在: %s\n", isHasStr2)
 				// 追加内容
 				if err := filex.Append(replyFilePath+"reply.go", replyStruct); err != nil {
-					fmt.Printf("追加内容失败: %s\n", err.Error())
+					fmtp.Printf("追加内容失败: %s\n", err.Error())
 					return
 				}
 			} else {
-				fmt.Println("reply struct 存在")
+				fmtp.Println("reply struct 存在")
 			}
 		}
 	}
+
+	fmt.Println("Done!")
 }
 
 func getLogicPath(name string) string {

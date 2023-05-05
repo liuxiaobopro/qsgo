@@ -7,14 +7,16 @@ import (
 	"strings"
 
 	"github.com/liuxiaobopro/qsgo/global"
+	fmtp "github.com/liuxiaobopro/qsgo/log/fmt"
 	"github.com/liuxiaobopro/qsgo/service/web"
 
+	arrayx "github.com/liuxiaobopro/gobox/array"
 	stringx "github.com/liuxiaobopro/gobox/string"
 )
 
 var (
 	version string
-	debug   = true
+	debug   = false
 
 	userHomePath string // 用户家目录
 	qsgoPath     string
@@ -37,9 +39,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	if debug {
-		fmt.Println("home:", u)
-	}
+	fmtp.Println("home:", u)
 	global.UserHomePath, userHomePath = u, u
 	global.QsgoPath, qsgoPath = userHomePath+"/.qsgo", userHomePath+"/.qsgo"
 	global.WebTplPath, webTplPath = qsgoPath+"/tpl", qsgoPath+"/tpl"
@@ -51,9 +51,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	if debug {
-		fmt.Println("pwd:", pwd)
-	}
+	fmtp.Println("pwd:", pwd)
 	global.ProjectPath = pwd
 	//#endregion
 	//#endregion
@@ -77,19 +75,43 @@ func main() {
 		return
 	}
 
-	for _, v := range args {
-		if stringx.Has(v, byte(':')) {
-			s := strings.Split(v, ":")
-			switch s[0] {
-			case "web":
-				web.Start(s[1])
-			}
-		} else {
-			if v == "h" || v == "help" {
-				help()
-			} else {
-				fmt.Println("参数错误")
-			}
+	if len(args) == 2 {
+		if args[0] == "debug" {
+			debug = true
+			global.Debug = debug
+		}
+	}
+
+	var v string
+	if arrayx.IsIn(args, "debug") {
+		debug = true
+		global.Debug = debug
+
+		if len(args) <= 1 {
+			fmt.Println("debug不能单独使用")
+			return
+		}
+
+		v = args[1]
+	} else {
+		v = args[0]
+	}
+
+	fmtp.Println("args:", strings.Join(args, " "))
+
+	if stringx.Has(v, byte(':')) {
+		s := strings.Split(v, ":")
+		switch s[0] {
+		case "web":
+			web.Start(s[1])
+		}
+	} else {
+		switch v {
+		case "h":
+		case "help":
+			help()
+		default:
+			fmt.Println("参数错误")
 		}
 	}
 }

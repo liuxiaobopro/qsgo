@@ -4,6 +4,8 @@ import (
 	"embed"
 	"fmt"
 	"os"
+
+	fmtp "github.com/liuxiaobopro/qsgo/log/fmt"
 )
 
 //go:embed tpl/*
@@ -20,34 +22,24 @@ func initTpl() {
 
 	// 创建tpl目录, 覆盖生成
 	if _, err := os.Stat(webTplPath); os.IsNotExist(err) {
-		if debug {
-			fmt.Printf("%s不存在, 正在创建... \n", webTplPath)
-		}
+		fmtp.Printf("%s不存在, 正在创建... \n", webTplPath)
 		err = os.Mkdir(webTplPath, os.ModePerm)
 		if err != nil {
 			panic(err)
 		}
-		if debug {
-			fmt.Printf("%s创建成功 \n", webTplPath)
-		}
+		fmtp.Printf("%s创建成功 \n", webTplPath)
 	} else {
-		if debug {
-			fmt.Printf("%s存在, 正在删除... \n", webTplPath)
-		}
+		fmtp.Printf("%s存在, 正在删除... \n", webTplPath)
 		err = os.RemoveAll(webTplPath)
 		if err != nil {
 			panic(err)
 		}
-		if debug {
-			fmt.Printf("%s删除成功, 正在创建... \n", webTplPath)
-		}
+		fmtp.Printf("%s删除成功, 正在创建... \n", webTplPath)
 		err = os.Mkdir(webTplPath, os.ModePerm)
 		if err != nil {
 			panic(err)
 		}
-		if debug {
-			fmt.Printf("%s创建成功 \n", webTplPath)
-		}
+		fmtp.Printf("%s创建成功 \n", webTplPath)
 	}
 
 	// 获取projectWebTplPath下的所有文件

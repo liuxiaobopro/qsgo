@@ -8,6 +8,8 @@ import (
 	"sync"
 	"syscall"
 
+	fmtp "github.com/liuxiaobopro/qsgo/log/fmt"
+
 	filex "github.com/liuxiaobopro/gobox/file"
 )
 
@@ -24,12 +26,12 @@ func name(createProName string) {
 	// 检查文件夹是否存在
 	if _, err := os.Stat(gitProName); err == nil {
 		// 存在,删除
-		fmt.Println("删除文件夹: ", gitProName)
+		fmtp.Println("删除文件夹: ", gitProName)
 		os.RemoveAll(gitProName)
 	}
 	if _, err := os.Stat(createProName); err == nil {
 		// 存在,删除
-		fmt.Println("删除文件夹: ", createProName)
+		fmtp.Println("删除文件夹: ", createProName)
 		os.RemoveAll(createProName)
 	}
 
@@ -37,21 +39,22 @@ func name(createProName string) {
 	gitPath := fmt.Sprintf("http://gitee.com/liuxiaobopro/%s.git", gitProName)
 	cmd := exec.Command("git", "clone", gitPath)
 
-	fmt.Println("执行命令：", cmd.Args)
+	fmtp.Println("执行命令：", cmd.Args)
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Println("执行命令时出错：", err)
-		fmt.Println("标准错误信息：", stderr.String())
+		fmtp.Println("执行命令时出错：", err)
+		fmtp.Println("标准错误信息：", stderr.String())
 		return
 	}
 
 	// 修改clone下来的项目名
 	var wg sync.WaitGroup
 	wg.Add(1)
+	// 同个goroutine中无法修改文件夹名，所以开启一个goroutine
 	go func() {
 		defer wg.Done()
-		fmt.Println("修改项目名: ", createProName)
+		fmtp.Println("修改项目名: ", createProName)
 		if err := syscall.Rename(gitProName, createProName); err != nil {
 			fmt.Println("修改文件夹名时出错：", err)
 			return
