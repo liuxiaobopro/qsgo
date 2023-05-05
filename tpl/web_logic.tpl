@@ -12,7 +12,7 @@ type {{.Handle}}Logic struct{}
 var {{.CL}}logic = &{{.Handle}}Logic{}
 
 // Index Index
-func (th *{{.Handle}}Logic) Index(in *req.{{.CL}}IndexReq) (out *reply.{{.CL}}IndexReply, err *respx.Pt) {
+func (th *{{.Handle}}Logic) Index(in *req.{{.CL}}IndexReq) (out *reply.{{.CL}}IndexReply, err *respx.Pt) { // 最好保留一个func, 为了保留import
 	//TODO: write your logic here
 	out = &reply.{{.CL}}IndexReply{}
 	return

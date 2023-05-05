@@ -16,7 +16,7 @@ type {{.Handle}}Handle struct {
 var {{.CL}}Controller = &{{.Handle}}Handle{}
 
 // Index Index
-func (th *{{.Handle}}Handle) Index(c *gin.Context) {
+func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 为了保留import
 	var r req.{{.CL}}IndexReq
 	if err := th.ShouldBind(c, &r); err != nil { // get=>ShouldBind post=>ShouldBindJSON
 		th.ReturnErr(c, respx.ParamErrT.ToPt())

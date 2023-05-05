@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	filex "github.com/liuxiaobopro/gobox/file"
 	stringx "github.com/liuxiaobopro/gobox/string"
 	fmtp "github.com/liuxiaobopro/qsgo/log/fmt"
 )
@@ -65,25 +66,23 @@ func getCL(name string) string {
 }
 
 type genRouter struct {
-	Handle      string
-	HandleFunc  string
-	HandleLogic string
-	Logic       string
-	LogicFunc   string
-	Req         string
-	Reply       string
+	Func     string // 方法名
+	Handle   string // 处理器名
+	CL       string // req reply
+	Logic    string // logic
+	LogicVar string // logic变量名
 }
 
 func (th *genRouter) genRouterController() string {
 	return `
 
-func (th *` + th.Handle + `Handle) ` + th.HandleFunc + `(c *gin.Context) {
-	var r req.` + th.Req + `Req
+func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
+	var r req.` + th.CL + `Req
 	if err := th.ShouldBind(c, &r); err != nil {  // get=>ShouldBind post=>ShouldBindJSON
 		th.ReturnErr(c, respx.ParamErrT.ToPt())
 		return
 	}
-	data, err := ` + th.HandleLogic + `.` + th.LogicFunc + `logic.` + th.HandleFunc + `(&r)
+	data, err := ` + th.Logic + `.` + th.LogicVar + `logic.` + th.Func + `(&r)
 	if err != nil {
 		th.ReturnErr(c, err)
 		return
@@ -93,27 +92,51 @@ func (th *` + th.Handle + `Handle) ` + th.HandleFunc + `(c *gin.Context) {
 	`
 }
 
+func (th *genRouter) checkRouterController(filePath string) (bool, error) {
+	s := `func (th *` + th.Handle + `Handle) ` + th.Func + ``
+	fmtp.Printf("checkRouterController str: %v\n", s)
+	return filex.Has(filePath, s)
+}
+
 func (th *genRouter) genRouterLogic() string {
 	return `
 
-func (th *` + th.Logic + `Logic) ` + th.LogicFunc + `(in *req.` + th.Req + `Req) (out *reply.` + th.Reply + `Reply, err *respx.Pt) {
+func (th *` + th.Handle + `Logic) ` + th.Func + `(in *req.` + th.CL + `Req) (out *reply.` + th.CL + `Reply, err *respx.Pt) {
 	//TODO: write your logic here
-	out = &reply.` + th.Reply + `Reply{}
+	out = &reply.` + th.CL + `Reply{}
 	return
 }
 	`
 }
 
+func (th *genRouter) checkRouterLogic(filePath string) (bool, error) {
+	s := `func (th *` + th.Handle + `Logic) ` + th.Func + ``
+	fmtp.Printf("checkRouterLogic str: %v\n", s)
+	return filex.Has(filePath, s)
+}
+
 func (th *genRouter) genRouterReq() string {
 	return `
 
-type ` + th.Req + `Req struct {}
+type ` + th.CL + `Req struct {}
 	`
+}
+
+func (th *genRouter) checkRouterReq(filePath string) (bool, error) {
+	s := `type ` + th.CL + `Req struct`
+	fmtp.Printf("checkRouterReq str: %v\n", s)
+	return filex.Has(filePath, s)
 }
 
 func (th *genRouter) genRouterReply() string {
 	return `
 
-type  ` + th.Reply + `Reply struct {}
+type ` + th.CL + `Reply struct {}
 	`
+}
+
+func (th *genRouter) checkRouterReply(filePath string) (bool, error) {
+	s := `type ` + th.CL + `Reply struct`
+	fmtp.Printf("checkRouterReply str: %v\n", s)
+	return filex.Has(filePath, s)
 }
