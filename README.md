@@ -48,3 +48,10 @@ qsgo web:api=user/user1/user2
 
 ![创建一个接口文件](asset/img/1683209639913.png)
 ![创建一个接口文件](asset/img/1683209772339.png)
+
+
+## 已知问题
+
+- [ ] `qsgo web:name=github.com/liuxiaobopro/qsgo` 创建带 `/` 的项目名会失败报错`修改文件夹名时出错： The system cannot find the path specified.`
+- [ ] `qsgo web:name=github.com@liuxiaobopro@qsgo` 包名不符合`go.mod`的, `tidy`会失败
+

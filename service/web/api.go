@@ -3,7 +3,6 @@ package web
 import (
 	"fmt"
 	"os"
-	"strings"
 	"text/template"
 
 	"github.com/liuxiaobopro/qsgo/global"
@@ -208,41 +207,4 @@ func api(name string) {
 	}
 
 	fmt.Println("Done!")
-}
-
-func getLogicPath(name string) string {
-	if stringx.Has(name, byte('/')) {
-		s := stringx.CutStartString(name, '/')
-		s = s[:len(s)-1]
-		return "/" + s
-	} else {
-		return ""
-	}
-}
-
-func getLogic(name string) string {
-	if stringx.Has(name, byte('/')) {
-		s := stringx.CutStartString(name, '/')
-		s = stringx.ReplaceCharAfterSpecifiedCharLow(s, "/")
-		return s + "Logic"
-	} else {
-		return "logic"
-	}
-}
-
-func getPackage(name, d string) string {
-	if !stringx.Has(name, byte('/')) {
-		return d
-	} else {
-		arr := strings.Split(name, "/")
-		return arr[len(arr)-2]
-	}
-}
-
-func getHandle(name string) string {
-	return stringx.ReplaceCharAfterSpecifiedCharLow(name, "/")
-}
-
-func getCL(name string) string {
-	return stringx.ReplaceCharAfterSpecifiedCharUp(name, "/")
 }
