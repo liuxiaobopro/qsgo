@@ -79,7 +79,7 @@ func (th *genRouter) genRouterController() string {
 func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 	var r req.` + th.CL + `Req
 	if err := th.ShouldBind(c, &r); err != nil {  // get=>ShouldBind post=>ShouldBindJSON
-		th.ReturnErr(c, respx.ParamErrT.ToPt())
+		th.ReturnErr(c, respx.ParamErrT)
 		return
 	}
 	data, err := ` + th.Logic + `.` + th.LogicVar + `logic.` + th.Func + `(&r)
@@ -101,10 +101,10 @@ func (th *genRouter) checkRouterController(filePath string) (bool, error) {
 func (th *genRouter) genRouterLogic() string {
 	return `
 
-func (th *` + th.Handle + `Logic) ` + th.Func + `(in *req.` + th.CL + `Req) (out *reply.` + th.CL + `Reply, err *respx.Pt) {
+func (th *` + th.Handle + `Logic) ` + th.Func + `(in *req.` + th.CL + `Req) (*reply.` + th.CL + `Reply, *respx.T) {
 	//TODO: write your logic here
-	out = &reply.` + th.CL + `Reply{}
-	return
+	out := &reply.` + th.CL + `Reply{}
+	return out, nil
 }
 	`
 }
