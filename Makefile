@@ -13,6 +13,12 @@ windows:
 	@go build -o $(BIN_PATH).exe
 	@echo "Done! $(shell date "+%Y-%m-%d %H:%M:%S")"
 
+linux:
+	@echo "Building for Linux..."
+	@go fmt
+	@go build -o $(BIN_PATH)
+	@echo "Done! $(shell date "+%Y-%m-%d %H:%M:%S")"
+
 clean:
 	@echo "Cleaning..."
 	@rm -rf $(BIN_PATH).exe
