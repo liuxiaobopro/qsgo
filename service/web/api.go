@@ -155,7 +155,7 @@ func api(name string) {
 		var (
 			reqStruct                  string
 			replyStruct                string
-			reqFilePath, replyFilePath = targetPath + "types/req/", targetPath + "types/reply/"
+			reqFilePath, replyFilePath = targetPath + "define/types/req/", targetPath + "define/types/reply/"
 		)
 		if stringx.Has(name, byte('/')) {
 			reqStruct = stringx.ReplaceCharAfterSpecifiedCharUp(name, "/") + "IndexReq"
