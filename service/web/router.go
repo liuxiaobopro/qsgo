@@ -30,8 +30,8 @@ func router(name string) {
 
 	controllerFilePath := fmt.Sprintf("./controller/%s.go", path)
 	logicFilePath := fmt.Sprintf("./logic/%s.go", path)
-	reqFilePath := "./types/req/req.go"
-	replyFilePath := "./types/reply/reply.go"
+	reqFilePath := "./define/types/req/req.go"
+	replyFilePath := "./define/types/reply/reply.go"
 
 	router := &genRouter{
 		Func:   handleFunc,
