@@ -1,8 +1,8 @@
 package {{.Package}}
 
 import (
-	"{{.Project}}/types/reply"
-	"{{.Project}}/types/req"
+	"{{.Project}}/define/types/reply"
+	"{{.Project}}/define/types/req"
 
 	replyx "github.com/liuxiaobopro/gobox/reply"
 )

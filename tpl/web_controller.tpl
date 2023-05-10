@@ -2,7 +2,7 @@ package {{.Package}}
 
 import (
 	{{.Logic}}"{{.Project}}/logic{{.LogicPath}}"
-	"{{.Project}}/types/req"
+	"{{.Project}}/define/types/req"
 
 	"github.com/gin-gonic/gin"
 	httpx "github.com/liuxiaobopro/gobox/http"

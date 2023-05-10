@@ -51,7 +51,7 @@ func api(name string) {
 	// 目标目录
 	targetPath := "./"
 
-	controllerPath := targetPath + "controller/" + name
+	controllerPath := targetPath + "controller/" + stringx.CutStartString(name, '/')
 	controllerPath = stringx.CutStartString(controllerPath, '/')
 	controllerFilePath := targetPath + "controller/" + name + ".go"
 	logicPath := targetPath + "logic/" + name
