@@ -51,11 +51,16 @@ func api(name string) {
 	// 目标目录
 	targetPath := "./"
 
-	controllerPath := targetPath + "controller/" + stringx.CutStartString(name, '/')
-	controllerPath = stringx.CutStartString(controllerPath, '/')
+	var p string
+	if stringx.Has(name, byte('/')) {
+		p = stringx.CutStartString(name, '/')
+	} else {
+		p = name
+	}
+
+	controllerPath := targetPath + "controller/" + p
 	controllerFilePath := targetPath + "controller/" + name + ".go"
-	logicPath := targetPath + "logic/" + name
-	logicPath = stringx.CutStartString(logicPath, '/')
+	logicPath := targetPath + "logic/" + p
 	logicFilePath := targetPath + "logic/" + name + ".go"
 
 	fmtp.Println("controller目录路径:", controllerPath)
@@ -71,9 +76,11 @@ func api(name string) {
 			return
 		} else {
 			if os.IsNotExist(err) {
-				if err := os.MkdirAll(controllerPath, os.ModePerm); err != nil {
-					fmtp.Printf("创建controller目录失败: %s\n", err.Error())
-					return
+				if stringx.Has(name, byte('/')) {
+					if err := os.MkdirAll(controllerPath, os.ModePerm); err != nil {
+						fmtp.Printf("创建controller目录失败: %s\n", err.Error())
+						return
+					}
 				}
 				var file *os.File
 				if file, err = os.Create(controllerFilePath); err != nil {
@@ -115,9 +122,11 @@ func api(name string) {
 			return
 		} else {
 			if os.IsNotExist(err) {
-				if err := os.MkdirAll(logicPath, os.ModePerm); err != nil {
-					fmtp.Printf("创建logic目录失败: %s\n", err.Error())
-					return
+				if stringx.Has(name, byte('/')) {
+					if err := os.MkdirAll(logicPath, os.ModePerm); err != nil {
+						fmtp.Printf("创建logic目录失败: %s\n", err.Error())
+						return
+					}
 				}
 				var file *os.File
 				if file, err = os.Create(logicFilePath); err != nil {
