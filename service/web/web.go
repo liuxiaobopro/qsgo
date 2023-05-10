@@ -82,6 +82,7 @@ func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 		th.ReturnErr(c, replyx.ParamErrT)
 		return
 	}
+	fmt.Printf("` + th.CL + `Req: %v\n", r)
 	data, err := ` + th.Logic + `.` + th.LogicVar + `logic.` + th.Func + `(&r)
 	if err != nil {
 		th.ReturnErr(c, err)

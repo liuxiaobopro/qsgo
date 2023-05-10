@@ -1,6 +1,7 @@
 package {{.Package}}
 
 import (
+	"fmt"
 	{{.Logic}}"{{.Project}}/logic{{.LogicPath}}"
 	"{{.Project}}/define/types/req"
 
@@ -22,6 +23,7 @@ func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 
 		th.ReturnErr(c, replyx.ParamErrT)
 		return
 	}
+	fmt.Printf("{{.CL}}IndexReq: %v\n", r)
 	data, err := {{.Logic}}.{{.CL}}logic.Index(&r)
 	if err != nil {
 		th.ReturnErr(c, err)
