@@ -78,7 +78,7 @@ func (th *genRouter) genRouterController() string {
 
 func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 	var r req.` + th.CL + `Req
-	if err := th.ShouldBind(c, &r); err != nil {  // get=>ShouldBind post=>ShouldBindJSON
+	if err := th.ShouldBind(c, &r); err != nil {
 		th.ReturnErr(c, respx.ParamErrT)
 		return
 	}
