@@ -83,7 +83,7 @@ func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 		return
 	}
 	j, _ := json.Marshal(r)
-	global.Logger.Infof(c, "` + th.CL + `IndexReq: %s", j)
+	global.Logger.Infof(c, "` + th.CL + `Req: %s", j)
 	data, err := ` + th.Logic + `.` + th.LogicVar + `logic.` + th.Func + `(&r)
 	if err != nil {
 		th.ReturnErr(c, err)
