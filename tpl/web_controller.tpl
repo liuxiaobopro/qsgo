@@ -1,9 +1,11 @@
 package {{.Package}}
 
 import (
-	"fmt"
-	{{.Logic}}"{{.Project}}/logic{{.LogicPath}}"
+	"encoding/json"
+
 	"{{.Project}}/define/types/req"
+	"{{.Project}}/global"
+	{{.Logic}}"{{.Project}}/logic{{.LogicPath}}"
 
 	"github.com/gin-gonic/gin"
 	httpx "github.com/liuxiaobopro/gobox/http"
@@ -23,7 +25,8 @@ func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 
 		th.ReturnErr(c, replyx.ParamErrT)
 		return
 	}
-	fmt.Printf("{{.CL}}IndexReq: %v\n", r)
+	j, _ := json.Marshal(r)
+	global.Logger.Infof(c, "{{.CL}}IndexReq: %s", j)
 	data, err := {{.Logic}}.{{.CL}}logic.Index(&r)
 	if err != nil {
 		th.ReturnErr(c, err)

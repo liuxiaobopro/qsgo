@@ -82,7 +82,8 @@ func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 		th.ReturnErr(c, replyx.ParamErrT)
 		return
 	}
-	fmt.Printf("` + th.CL + `Req: %v\n", r)
+	j, _ := json.Marshal(r)
+	global.Logger.Infof(c, "` + th.CL + `IndexReq: %s", j)
 	data, err := ` + th.Logic + `.` + th.LogicVar + `logic.` + th.Func + `(&r)
 	if err != nil {
 		th.ReturnErr(c, err)
@@ -104,7 +105,9 @@ func (th *genRouter) genRouterLogic() string {
 
 func (th *` + th.Handle + `Logic) ` + th.Func + `(in *req.` + th.CL + `Req) (*reply.` + th.CL + `Reply, *replyx.T) {
 	//TODO: write your logic here
-	out := &reply.` + th.CL + `Reply{}
+	var(
+		out = &reply.` + th.CL + `Reply{}
+	)
 	return out, nil
 }
 	`
