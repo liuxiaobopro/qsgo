@@ -84,7 +84,7 @@ func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 	}
 	j, _ := json.Marshal(r)
 	global.Logger.Infof(c, "` + th.CL + `Req: %s", j)
-	data, err := ` + th.Logic + `.` + th.LogicVar + `logic.` + th.Func + `(&r)
+	data, err := ` + th.Logic + `.` + th.LogicVar + `logic.` + th.Func + `(c, &r)
 	if err != nil {
 		th.ReturnErr(c, err)
 		return
@@ -103,7 +103,7 @@ func (th *genRouter) checkRouterController(filePath string) (bool, error) {
 func (th *genRouter) genRouterLogic() string {
 	return `
 
-func (th *` + th.Handle + `Logic) ` + th.Func + `(in *req.` + th.CL + `Req) (*reply.` + th.CL + `Reply, *replyx.T) {
+func (th *` + th.Handle + `Logic) ` + th.Func + `(c *gin.Context, in *req.` + th.CL + `Req) (*reply.` + th.CL + `Reply, *replyx.T) {
 	//TODO: write your logic here
 	var(
 		out = &reply.` + th.CL + `Reply{}

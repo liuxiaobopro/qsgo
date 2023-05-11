@@ -27,7 +27,7 @@ func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 
 	}
 	j, _ := json.Marshal(r)
 	global.Logger.Infof(c, "{{.CL}}IndexReq: %s", j)
-	data, err := {{.Logic}}.{{.CL}}logic.Index(&r)
+	data, err := {{.Logic}}.{{.CL}}logic.Index(c, &r)
 	if err != nil {
 		th.ReturnErr(c, err)
 		return
