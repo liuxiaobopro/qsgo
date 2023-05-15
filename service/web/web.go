@@ -89,7 +89,12 @@ func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 		th.ReturnErr(c, err)
 		return
 	}
-	th.RetuenOk(c, data)
+	if m, err := define.DefaultResStyle(data); err != nil {
+		th.ReturnErr(c, replyx.InternalErrT)
+		return
+	} else {
+		th.RetuenOk(c, m)
+	}
 }
 	`
 }

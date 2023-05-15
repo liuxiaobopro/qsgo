@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"{{.Project}}/define/types/req"
+	"{{.Project}}/define"
 	"{{.Project}}/global"
 	{{.Logic}}"{{.Project}}/logic{{.LogicPath}}"
 
@@ -32,5 +33,10 @@ func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 
 		th.ReturnErr(c, err)
 		return
 	}
-	th.RetuenOk(c, data)
+	if m, err := define.DefaultResStyle(data); err != nil {
+		th.ReturnErr(c, replyx.InternalErrT)
+		return
+	} else {
+		th.RetuenOk(c, m)
+	}
 }
