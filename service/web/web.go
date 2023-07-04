@@ -77,10 +77,7 @@ func (th *genRouter) genRouterController() string {
 	return `
 
 func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
-	var r map[string]interface{}
-	_ = json.NewDecoder(c.Request.Body).Decode(&r)
-	b, _ := json.Marshal(r)
-	global.Logger.Debugf(c, "` + th.CL + `Req1: %s", string(b))
+	global.Logger.Debugf(c, "` + th.CL + `Req1: %s", ginx.GetBody(c))
 
 	var r req.` + th.CL + `Req
 	if err := th.ShouldBind(c, &r); err != nil {
