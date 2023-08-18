@@ -26,18 +26,18 @@ func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 
 
 	var r req.{{.CL}}IndexReq
 	if err := th.ShouldBind(c, &r); err != nil {
-		th.ReturnErr(c, replyx.ParamErrT)
+		th.ReturnStatusOKErr(c, replyx.ParamErrT)
 		return
 	}
 	j, _ := json.Marshal(r)
 	global.Logger.Debugf(c, "{{.CL}}IndexReq: %s", j)
 	data, err := {{.Logic}}.{{.CL}}logic.Index(c, &r)
 	if err != nil {
-		th.ReturnErr(c, err)
+		th.ReturnStatusOKErr(c, err)
 		return
 	}
 	if m, err := define.DefaultResStyle(data); err != nil {
-		th.ReturnErr(c, replyx.InternalErrT)
+		th.ReturnStatusOKErr(c, replyx.InternalErrT)
 		return
 	} else {
 		th.RetuenOk(c, m)

@@ -82,18 +82,18 @@ func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 
 	var r req.` + th.CL + `Req
 	if err := th.ShouldBind(c, &r); err != nil {
-		th.ReturnErr(c, replyx.ParamErrT)
+		th.ReturnStatusOKErr(c, replyx.ParamErrT)
 		return
 	}
 	j, _ := json.Marshal(r)
 	global.Logger.Debugf(c, "` + th.CL + `Req2: %s", j)
 	data, err := ` + th.Logic + `.` + th.LogicVar + `logic.` + th.Func + `(c, &r)
 	if err != nil {
-		th.ReturnErr(c, err)
+		th.ReturnStatusOKErr(c, err)
 		return
 	}
 	if m, err := define.DefaultResStyle(data); err != nil {
-		th.ReturnErr(c, replyx.InternalErrT)
+		th.ReturnStatusOKErr(c, replyx.InternalErrT)
 		return
 	} else {
 		th.RetuenOk(c, m)
