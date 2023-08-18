@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"path/filepath"
 
 	fmtp "github.com/liuxiaobopro/qsgo/log/fmt"
 
@@ -11,6 +12,17 @@ import (
 
 func router(name string) {
 	fmt.Printf("开始创建router: %s\n", name) // demo/UserInfo
+
+	// 将name的最后一个/后面的字符串, 如果是下换线改成大写, 否则不变
+	dir, file := filepath.Split(name)
+	fmtp.Println("dir:", dir)
+	fmtp.Println("file:", file)
+	if stringx.Has(file, '_') {
+		file = stringx.ReplaceCharAfterSpecifiedCharUp(file, "_")
+	}
+
+	name = dir + file
+
 	if !stringx.Has(name, '/') {
 		fmt.Printf("router格式错误,例如: demo/%s, 就是在demo.go添加%s方法", name, name)
 		return
@@ -18,7 +30,10 @@ func router(name string) {
 
 	path := stringx.CutStartString(name, '/')
 	path = path[:len(path)-1]
+
 	fmtp.Println("path:", path)
+	fmtp.Println("namenamenamenamenamename1:", name)
+
 	handleFunc := stringx.CutEndString(name, '/')
 	handle := stringx.ReplaceCharAfterSpecifiedCharLow(path, "/")
 	logicVar := stringx.ReplaceCharAfterSpecifiedCharUp(path, "/")
@@ -33,12 +48,15 @@ func router(name string) {
 	reqFilePath := "./define/types/req/req.go"
 	replyFilePath := "./define/types/reply/reply.go"
 
+	fmtp.Println("namenamenamenamenamename2:", name)
+	fmtp.Println("CL:", getCL(name))
+
 	router := &genRouter{
-		Func:   handleFunc,
-		Handle: handle,
-		CL:     getCL(name),
-		Logic:  logic,
-		LogicVar:logicVar,
+		Func:     handleFunc,
+		Handle:   handle,
+		CL:       getCL(name),
+		Logic:    logic,
+		LogicVar: logicVar,
 	}
 
 	if has, err := router.checkRouterController(controllerFilePath); err != nil {

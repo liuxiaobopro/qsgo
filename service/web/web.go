@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	filex "github.com/liuxiaobopro/gobox/file"
@@ -40,7 +41,7 @@ func getLogicPath(name string) string {
 
 func getLogic(name string) string {
 	if stringx.Has(name, byte('/')) {
-		s := stringx.CutStartString(name, '/')
+		s := filepath.Base(name)
 		s = stringx.ReplaceCharAfterSpecifiedCharLow(s, "/")
 		return s + "Logic"
 	} else {

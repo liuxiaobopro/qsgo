@@ -1,2 +1,6 @@
-github.com/liuxiaobopro/gobox v0.0.20 h1:/uBKWyCwIhrsaM7rTF4o479TB1qKbFwSYrzbTzxdYHs=
-github.com/liuxiaobopro/gobox v0.0.20/go.mod h1:LYXsiBkyaMsUrE6bN4/3zu4cxmRaCQmzyuSvj+gVwig=
+github.com/liuxiaobopro/gobox v0.9.6 h1:pBf50ebSLMwA4jqxjXfR4Nf98YN/jStVAlVP45es/Qw=
+github.com/liuxiaobopro/gobox v0.9.6/go.mod h1:zfyCT3lAGVDLv/D9jwTjAzb3PLvcRzO1Zb/02m6S78U=
+github.com/qiniu/go-sdk/v7 v7.15.0 h1:vkxZZHM2Ed0qHeIx7NF3unXav+guaVIXlEsCCkpQAww=
+golang.org/x/crypto v0.9.0 h1:LF6fAI+IutBocDJ2OT0Q1g8plpYljMZ4+lty+dsqw3g=
+golang.org/x/crypto v0.9.0/go.mod h1:yrmDGqONDYtNj3tH8X9dzUun2m2lzPa9ngI6/RUPGR0=
+golang.org/x/sync v0.1.0 h1:wsuoTGHzEhffawBOhz5CYhcrV4IdKZbEyZjBMuTp12o=
