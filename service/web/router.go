@@ -53,10 +53,10 @@ func router(name string) {
 
 	router := &genRouter{
 		Func:     handleFunc,
-		Handle:   handle,
-		CL:       getCL(name),
-		Logic:    logic,
-		LogicVar: logicVar,
+		Handle:   stringx.ReplaceCharAfterSpecifiedCharLow(handle, "_"),
+		CL:       stringx.ReplaceCharAfterSpecifiedCharUp(getCL(name), "_"),
+		Logic:    stringx.ReplaceCharAfterSpecifiedCharLow(logic, "_"),
+		LogicVar: stringx.ReplaceCharAfterSpecifiedCharUp(logicVar, "_"),
 	}
 
 	if has, err := router.checkRouterController(controllerFilePath); err != nil {

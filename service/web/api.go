@@ -92,9 +92,9 @@ func api(name string) {
 				data := ControllerLogic{
 					Package:   getPackage(name, "controller"),
 					Project:   global.ProjectName,
-					Handle:    getHandle(name),
-					CL:        getCL(name),
-					Logic:     getLogic(name),
+					Handle:    stringx.ReplaceCharAfterSpecifiedCharLow(getHandle(name), "_"),
+					CL:        stringx.ReplaceCharAfterSpecifiedCharUp(getCL(name), "_"),
+					Logic:     stringx.ReplaceCharAfterSpecifiedCharLow(getLogic(name), "_"),
 					LogicPath: getLogicPath(name),
 				}
 				tpl, err := template.ParseFiles(webTplPath + "/web_controller.tpl")
@@ -138,8 +138,8 @@ func api(name string) {
 				data := ControllerLogic{
 					Package: getPackage(name, "logic"),
 					Project: global.ProjectName,
-					Handle:  getHandle(name),
-					CL:      getCL(name),
+					Handle:  stringx.ReplaceCharAfterSpecifiedCharLow(getHandle(name), "_"),
+					CL:      stringx.ReplaceCharAfterSpecifiedCharUp(getCL(name), "_"),
 				}
 				tpl, err := template.ParseFiles(webTplPath + "/web_logic.tpl")
 				if err != nil {
@@ -169,6 +169,9 @@ func api(name string) {
 		if stringx.Has(name, byte('/')) {
 			reqStruct = stringx.ReplaceCharAfterSpecifiedCharUp(name, "/") + "IndexReq"
 			replyStruct = stringx.ReplaceCharAfterSpecifiedCharUp(name, "/") + "IndexReply"
+
+			reqStruct = stringx.ReplaceCharAfterSpecifiedCharUp(reqStruct, "_")
+			replyStruct = stringx.ReplaceCharAfterSpecifiedCharUp(replyStruct, "_")
 		} else {
 			n := stringx.FirstUp(name)
 			reqStruct = n + "IndexReq"
@@ -182,8 +185,25 @@ func api(name string) {
 
 		// 判断struct是否存在
 		if has, err := filex.Has(reqFilePath+"req.go", isHasStr1); err != nil {
-			fmtp.Printf("判断req.go文件是否存在失败: %s\n", err.Error())
-			return
+			// fmtp.Printf("判断req.go文件是否存在失败: %s\n", err.Error())
+
+			// 创建文件夹
+			if err := os.MkdirAll(reqFilePath, os.ModePerm); err != nil {
+				fmtp.Printf("创建req文件夹失败: %s\n", err.Error())
+				return
+			}
+
+			// 创建文件
+			if _, err := os.Create(reqFilePath + "req.go"); err != nil {
+				fmtp.Printf("创建req文件失败: %s\n", err.Error())
+				return
+			}
+
+			// 追加内容
+			if err := filex.Append(reqFilePath+"req.go", "package req\n\n"+reqStruct); err != nil {
+				fmtp.Printf("追加内容失败: %s\n", err.Error())
+				return
+			}
 		} else {
 			if !has {
 				fmtp.Printf("req struct 不存在: %s\n", isHasStr1)
@@ -199,8 +219,24 @@ func api(name string) {
 
 		// 判断struct是否存在
 		if has, err := filex.Has(replyFilePath+"reply.go", isHasStr2); err != nil {
-			fmtp.Printf("判断reply.go文件是否存在失败: %s\n", err.Error())
-			return
+			// fmtp.Printf("判断reply.go文件是否存在失败: %s\n", err.Error())
+
+			// 创建文件夹
+			if err := os.MkdirAll(replyFilePath, os.ModePerm); err != nil {
+				fmtp.Printf("创建reply文件夹失败: %s\n", err.Error())
+			}
+
+			// 创建文件
+			if _, err := os.Create(replyFilePath + "reply.go"); err != nil {
+				fmtp.Printf("创建reply文件失败: %s\n", err.Error())
+				return
+			}
+
+			// 追加内容
+			if err := filex.Append(replyFilePath+"reply.go", "package reply\n\n"+replyStruct); err != nil {
+				fmtp.Printf("追加内容失败: %s\n", err.Error())
+				return
+			}
 		} else {
 			if !has {
 				fmtp.Printf("reply struct 不存在: %s\n", isHasStr2)
