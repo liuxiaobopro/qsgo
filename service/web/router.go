@@ -50,6 +50,7 @@ func router(name string) {
 
 	fmtp.Println("namenamenamenamenamename2:", name)
 	fmtp.Println("CL:", getCL(name))
+	fmt.Printf("logic: %s\n", logic)
 
 	router := &genRouter{
 		Func:     handleFunc,
@@ -58,6 +59,8 @@ func router(name string) {
 		Logic:    stringx.ReplaceCharAfterSpecifiedCharLow(logic, "_"),
 		LogicVar: stringx.ReplaceCharAfterSpecifiedCharUp(logicVar, "_"),
 	}
+
+	fmtp.Println("Logic:", router.Logic)
 
 	if has, err := router.checkRouterController(controllerFilePath); err != nil {
 		fmt.Printf("检查controller失败: %v\n", err)

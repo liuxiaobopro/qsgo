@@ -40,9 +40,11 @@ func getLogicPath(name string) string {
 }
 
 func getLogic(name string) string {
+	fmtp.Printf("getLogic name: %s\n", name)
 	if stringx.Has(name, byte('/')) {
-		s := filepath.Base(name)
-		s = stringx.ReplaceCharAfterSpecifiedCharLow(s, "/")
+		s := filepath.Dir(name)
+		fmtp.Printf("getLogic s: %s\n", s)
+		s = stringx.ReplaceCharAfterSpecifiedCharLow(s, "\\")
 		return s + "Logic"
 	} else {
 		return "logic"
