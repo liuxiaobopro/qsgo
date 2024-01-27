@@ -22,8 +22,6 @@ var {{.CL}}Controller = &{{.Handle}}Handle{}
 
 // Index Index
 func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 为了保留import
-	global.Logger.Debugf(c, "{{.CL}}IndexReq: %s", ginx.GetBody(c))
-
 	var r req.{{.CL}}IndexReq
 	if err := th.ShouldBind(c, &r); err != nil {
 		th.ReturnStatusOKErr(c, replyx.ParamErrT)
@@ -39,7 +37,6 @@ func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 
 	if m, err := define.DefaultResStyle(data); err != nil {
 		th.ReturnStatusOKErr(c, replyx.InternalErrT)
 		return
-	} else {
-		th.RetuenOk(c, m)
 	}
+	th.RetuenOk(c, m)
 }

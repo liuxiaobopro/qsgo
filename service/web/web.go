@@ -80,8 +80,6 @@ func (th *genRouter) genRouterController() string {
 	return `
 
 func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
-	global.Logger.Debugf(c, "` + th.CL + `Req1: %s", ginx.GetBody(c))
-
 	var r req.` + th.CL + `Req
 	if err := th.ShouldBind(c, &r); err != nil {
 		th.ReturnStatusOKErr(c, replyx.ParamErrT)
@@ -97,9 +95,8 @@ func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 	if m, err := define.DefaultResStyle(data); err != nil {
 		th.ReturnStatusOKErr(c, replyx.InternalErrT)
 		return
-	} else {
-		th.RetuenOk(c, m)
 	}
+	th.RetuenOk(c, m)
 }
 	`
 }
