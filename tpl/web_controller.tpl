@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	httpx "github.com/liuxiaobopro/gobox/http"
 	replyx "github.com/liuxiaobopro/gobox/reply"
-	ginx "github.com/liuxiaobopro/gobox/gin"
 )
 
 type {{.Handle}}Handle struct {
@@ -36,7 +35,7 @@ func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 
 	}
 	if m, err := define.DefaultResStyle(data); err != nil {
 		th.ReturnStatusOKErr(c, replyx.InternalErrT)
-		return
+	} else {
+		th.RetuenOk(c, m)
 	}
-	th.RetuenOk(c, m)
 }

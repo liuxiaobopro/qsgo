@@ -94,9 +94,9 @@ func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 	}
 	if m, err := define.DefaultResStyle(data); err != nil {
 		th.ReturnStatusOKErr(c, replyx.InternalErrT)
-		return
+	} else {
+		th.RetuenOk(c, m)
 	}
-	th.RetuenOk(c, m)
 }
 	`
 }
