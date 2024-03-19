@@ -28,6 +28,7 @@ func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 
 	}
 	j, _ := json.Marshal(r)
 	global.Logger.Debugf(c, "{{.CL}}IndexReq: %s", j)
+	c.Set(define.ReqText, string(j))
 	data, err := {{.Logic}}.{{.CL}}logic.Index(c, &r)
 	if err != nil {
 		th.ReturnStatusOKErr(c, err)

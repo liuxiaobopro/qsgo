@@ -87,6 +87,7 @@ func (th *` + th.Handle + `Handle) ` + th.Func + `(c *gin.Context) {
 	}
 	j, _ := json.Marshal(r)
 	global.Logger.Debugf(c, "` + th.CL + `Req2: %s", j)
+	c.Set(define.ReqText, string(j))
 	data, err := ` + th.Logic + `.` + th.LogicVar + `logic.` + th.Func + `(c, &r)
 	if err != nil {
 		th.ReturnStatusOKErr(c, err)
