@@ -37,6 +37,6 @@ func (th *{{.Handle}}Handle) Index(c *gin.Context) { // 最好保留一个func, 
 	if m, err := define.DefaultResStyle(data); err != nil {
 		th.ReturnStatusOKErr(c, replyx.InternalErrT)
 	} else {
-		th.RetuenOk(c, m)
+		th.ReturnOk(c, m)
 	}
 }
